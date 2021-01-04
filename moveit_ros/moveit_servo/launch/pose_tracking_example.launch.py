@@ -42,7 +42,7 @@ def generate_launch_description():
     pose_tracking_params = { 'moveit_servo' : pose_tracking_yaml }
 
     # Get parameters for the Servo node
-    servo_yaml = load_yaml('moveit_servo', 'config/panda_simulated_config.yaml')
+    servo_yaml = load_yaml('moveit_servo', 'config/panda_simulated_config_pose_tracking.yaml')
     servo_params = { 'moveit_servo' : servo_yaml }
 
     kinematics_yaml = load_yaml('moveit_resources_panda_moveit_config', 'config/kinematics.yaml')
@@ -57,14 +57,6 @@ def generate_launch_description():
                      output='log',
                      arguments=['-d', rviz_config_file],
                      parameters=[robot_description, robot_description_semantic, kinematics_yaml])
-
-    # Publishes tf's for the robot
-    robot_state_publisher = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='screen',
-        parameters=[robot_description]
-    )
 
     # A node to publish world -> panda_link0 transform
     static_tf = Node(package='tf2_ros',
@@ -89,4 +81,4 @@ def generate_launch_description():
                                               os.path.join(get_package_share_directory("moveit_servo"), "config", "start_positions.yaml"),
                                               robot_description])
 
-    return LaunchDescription([rviz_node, static_tf, pose_tracking_node, fake_joint_driver_node, robot_state_publisher])
+    return LaunchDescription([rviz_node, static_tf, pose_tracking_node, fake_joint_driver_node])

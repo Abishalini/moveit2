@@ -145,8 +145,10 @@ int main(int argc, char** argv)
   target_pose.pose.position.z = current_ee_tf.transform.translation.z;
   target_pose.pose.orientation = current_ee_tf.transform.rotation;
 
+
   // Modify it a little bit
-  target_pose.pose.position.x += 0.1;
+  RCLCPP_INFO_STREAM(LOGGER, "Changing z position by 0.1");
+  target_pose.pose.position.z += 0.1;
 
   // resetTargetPose() can be used to clear the target pose and wait for a new one, e.g. when moving between multiple
   // waypoints
@@ -161,24 +163,21 @@ int main(int argc, char** argv)
       [&tracker, &lin_tol, &rot_tol] { tracker.moveToPose(lin_tol, rot_tol, 0.1 /* target pose timeout */); });
 
   rclcpp::Rate loop_rate(50);
-  for (size_t i = 0; i < 500; ++i)
+  for (size_t i = 0; i < 50; ++i)
   {
     // Modify the pose target a little bit each cycle
     // This is a dynamic pose target
-    target_pose.pose.position.z += 0.0001;
+    target_pose.pose.position.y += 0.01;
+    //RCLCPP_INFO_STREAM(LOGGER, "Changing x position by 0.0001");
     target_pose.header.stamp = node->now();
     target_pose_pub->publish(target_pose);
 
     loop_rate.sleep();
   }
 
-  //executor.spin();
-
   // Make sure the tracker is stopped and clean up
   tracker.stopMotion();
   move_to_pose_thread.join();
-
-  //executor.spin();
 
   rclcpp::shutdown();
   return EXIT_SUCCESS;

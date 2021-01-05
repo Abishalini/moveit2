@@ -58,6 +58,14 @@ def generate_launch_description():
                      arguments=['-d', rviz_config_file],
                      parameters=[robot_description, robot_description_semantic, kinematics_yaml])
 
+    # Publishes tf's for the robot
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[robot_description]
+    )
+
     # A node to publish world -> panda_link0 transform
     static_tf = Node(package='tf2_ros',
                      executable='static_transform_publisher',
@@ -81,4 +89,5 @@ def generate_launch_description():
                                               os.path.join(get_package_share_directory("moveit_servo"), "config", "start_positions.yaml"),
                                               robot_description])
 
-    return LaunchDescription([rviz_node, static_tf, pose_tracking_node, fake_joint_driver_node])
+    return LaunchDescription([rviz_node, static_tf, pose_tracking_node, fake_joint_driver_node, robot_state_publisher])
+

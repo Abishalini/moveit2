@@ -114,7 +114,7 @@ int main(int argc, char** argv)
       planning_scene_monitor::PlanningSceneMonitor::DEFAULT_COLLISION_OBJECT_TOPIC,
       planning_scene_monitor::PlanningSceneMonitor::DEFAULT_PLANNING_SCENE_WORLD_TOPIC,
       false /* skip octomap monitor */);
-  planning_scene_monitor->startStateMonitor("/joint_states");
+  planning_scene_monitor->startStateMonitor(parameters->joint_topic);
   planning_scene_monitor->startPublishingPlanningScene(planning_scene_monitor::PlanningSceneMonitor::UPDATE_SCENE);
 
   rclcpp::sleep_for(std::chrono::seconds(5));
@@ -128,10 +128,10 @@ int main(int argc, char** argv)
       node->create_publisher<geometry_msgs::msg::PoseStamped>("target_pose", 1 /* queue */);
 
   // Subscribe to servo status (and log it when it changes)
-  StatusMonitor status_monitor(node, "status");
+  StatusMonitor status_monitor(node, parameters->status_topic);
 
-  Eigen::Vector3d lin_tol{ 0.01, 0.01, 0.01 };
-  double rot_tol = 0.1;
+  Eigen::Vector3d lin_tol{ 0.001, 0.001, 0.001 };
+  double rot_tol = 0.01;
 
   // Get the current EE transform
   geometry_msgs::msg::TransformStamped current_ee_tf;
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 
   // Modify it a little bit
   RCLCPP_INFO_STREAM(LOGGER, "Changing z position by 0.1");
-  target_pose.pose.position.z += 0.1;
+  target_pose.pose.position.x += 0.01;
 
   // resetTargetPose() can be used to clear the target pose and wait for a new one, e.g. when moving between multiple
   // waypoints
@@ -160,20 +160,26 @@ int main(int argc, char** argv)
 
   // Run the pose tracking in a new thread
   std::thread move_to_pose_thread(
-      [&tracker, &lin_tol, &rot_tol] { tracker.moveToPose(lin_tol, rot_tol, 0.1 /* target pose timeout */); });
+      [&tracker, &lin_tol, &rot_tol] { 
+      moveit_servo::PoseTrackingStatusCode tracking_status = tracker.moveToPose(lin_tol, rot_tol, 0.1 /* target pose timeout */); 
+      RCLCPP_INFO_STREAM(LOGGER, "Pose tracker exited with status: " << moveit_servo::POSE_TRACKING_STATUS_CODE_MAP.at(tracking_status));
+      });
 
   rclcpp::Rate loop_rate(50);
-  for (size_t i = 0; i < 50; ++i)
+  for (size_t i = 0; i < 500; ++i)
   {
     // Modify the pose target a little bit each cycle
     // This is a dynamic pose target
-    target_pose.pose.position.y += 0.01;
+    target_pose.pose.position.z += 0.0001;
     //RCLCPP_INFO_STREAM(LOGGER, "Changing x position by 0.0001");
     target_pose.header.stamp = node->now();
     target_pose_pub->publish(target_pose);
 
     loop_rate.sleep();
   }
+
+  rclcpp::sleep_for(std::chrono::seconds(10));
+  RCLCPP_INFO_STREAM(LOGGER, "Timer expired and unfinished motion will be terminated");
 
   // Make sure the tracker is stopped and clean up
   tracker.stopMotion();

@@ -40,7 +40,7 @@ namespace
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("moveit_servo.pose_tracking");
 constexpr double DEFAULT_LOOP_RATE = 100;  // Hz
 constexpr double ROS_STARTUP_WAIT = 10;    // sec
-constexpr size_t LOG_THROTTLE_PERIOD = 5;
+constexpr size_t LOG_THROTTLE_PERIOD = 10;
 }  // namespace
 
 namespace moveit_servo
@@ -110,8 +110,13 @@ PoseTrackingStatusCode PoseTracking::moveToPose(const Eigen::Vector3d& positiona
   // - Target pose becomes outdated
   // - Command frame transform becomes outdated
   // - Another thread requested a stop
-  while (rclcpp::ok() && !satisfiesPoseTolerance(positional_tolerance, angular_tolerance))
+  while (rclcpp::ok()) //&& !satisfiesPoseTolerance(positional_tolerance, angular_tolerance))
   {
+    if (satisfiesPoseTolerance(positional_tolerance, angular_tolerance)) {
+      RCLCPP_INFO_STREAM(LOGGER, "The target pose is achieved!");
+      //doPostMotionReset();
+      return PoseTrackingStatusCode::SUCCESS;
+    }
     // Attempt to update robot pose
     if (servo_->getCommandFrameTransform(command_frame_transform_))
     {

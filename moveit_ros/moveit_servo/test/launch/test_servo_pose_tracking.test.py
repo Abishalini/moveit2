@@ -51,19 +51,28 @@ def generate_servo_test_description(*args,
     pose_tracking_params = { 'moveit_servo' : pose_tracking_yaml }
 
     # Get parameters for the Servo node
-    servo_yaml = load_yaml('moveit_servo', 'config/panda_simulated_config.yaml')
+    servo_yaml = load_yaml('moveit_servo', 'config/panda_simulated_config_pose_tracking.yaml')
     servo_params = { 'moveit_servo' : servo_yaml }
 
     kinematics_yaml = load_yaml('moveit_resources_panda_moveit_config', 'config/kinematics.yaml')
-    panda_kinematics_params = {'robot_description_kinematics' : kinematics_yaml }
 
     # Publishes tf's for the robot
-    # robot_state_publisher = Node(
-    #     package='robot_state_publisher',
-    #     executable='robot_state_publisher',
-    #     output='screen',
-    #     parameters=[robot_description]
-    # )
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[robot_description]
+    )
+
+    # RViz
+    # rviz_config_file = get_package_share_directory('moveit_servo') + "/config/demo_rviz_pose_tracking.rviz"
+    # rviz_node = Node(package='rviz2',
+    #                  executable='rviz2',
+    #                  name='rviz2',
+    #                  #prefix=['xterm -e gdb -ex run --args'],
+    #                  output='log',
+    #                  arguments=['-d', rviz_config_file],
+    #                  parameters=[robot_description, robot_description_semantic, kinematics_yaml])
 
     # A node to publish world -> panda_link0 transform
     static_tf = Node(package='tf2_ros',
@@ -81,13 +90,13 @@ def generate_servo_test_description(*args,
                                               robot_description]
                                 )
     
-    pose_tracking_node = Node(
-        package='moveit_servo',
-        executable='servo_pose_tracking_demo',
-        #prefix=['xterm -e gdb -ex run --args'],
-        output='screen',
-        parameters=[robot_description, robot_description_semantic, kinematics_yaml, pose_tracking_params, servo_params]
-    )
+    # pose_tracking_node = Node(
+    #     package='moveit_servo',
+    #     executable='servo_pose_tracking_demo',
+    #     #prefix=['xterm -e gdb -ex run --args'],
+    #     output='screen',
+    #     parameters=[robot_description, robot_description_semantic, kinematics_yaml, pose_tracking_params, servo_params]
+    # )
 
     pose_tracking_gtest = launch_testing.actions.GTest(
                 path=PathJoinSubstitution([LaunchConfiguration('test_binary_dir'), gtest_name]),
@@ -100,12 +109,12 @@ def generate_servo_test_description(*args,
                                              description='Binary directory of package '
                                                          'containing test executables'),
         fake_joint_driver_node,
-        #robot_state_publisher,
+        robot_state_publisher,
         static_tf,
-        pose_tracking_node,
+        #rviz_node,
         pose_tracking_gtest,
         launch_testing.actions.ReadyToTest()
-    ]), {'static_tf': static_tf, 'pose_tracking': pose_tracking_node, 'servo_gtest': pose_tracking_gtest, 'fake_joint_driver_node': fake_joint_driver_node}
+    ]), {'robot_state_publisher': robot_state_publisher, 'static_tf': static_tf, 'servo_gtest': pose_tracking_gtest, 'fake_joint_driver_node': fake_joint_driver_node }
 
 
 def generate_test_description():
@@ -115,12 +124,12 @@ def generate_test_description():
 
 class TestGTestProcessActive(unittest.TestCase):
 
-    def test_gtest_run_complete(self, proc_info, static_tf, servo_gtest, pose_tracking, fake_joint_driver_node):
+    def test_gtest_run_complete(self, proc_info, robot_state_publisher, static_tf, servo_gtest, fake_joint_driver_node):
         proc_info.assertWaitForShutdown(servo_gtest, timeout=4000.0)
 
 
 @launch_testing.post_shutdown_test()
 class TestGTestProcessPostShutdown(unittest.TestCase):
 
-    def test_gtest_pass(self, proc_info, static_tf, servo_gtest, pose_tracking, fake_joint_driver_node):
+    def test_gtest_pass(self, proc_info, robot_state_publisher, static_tf, servo_gtest, fake_joint_driver_node):
         launch_testing.asserts.assertExitCodes(proc_info, process=servo_gtest)

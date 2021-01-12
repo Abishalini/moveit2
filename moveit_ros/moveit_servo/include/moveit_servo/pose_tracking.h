@@ -82,7 +82,7 @@ const std::unordered_map<PoseTrackingStatusCode, std::string> POSE_TRACKING_STAT
  * Class PoseTracking - subscribe to a target pose.
  * Servo toward the target pose.
  */
-class PoseTracking
+class PoseTracking 
 {
 public:
   /** \brief Constructor. Loads ROS parameters under the given namespace. */

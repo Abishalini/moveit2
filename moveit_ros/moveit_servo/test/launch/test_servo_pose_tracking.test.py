@@ -57,12 +57,12 @@ def generate_servo_test_description(*args,
     kinematics_yaml = load_yaml('moveit_resources_panda_moveit_config', 'config/kinematics.yaml')
 
     # Publishes tf's for the robot
-    robot_state_publisher = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='screen',
-        parameters=[robot_description]
-    )
+    # robot_state_publisher = Node(
+    #     package='robot_state_publisher',
+    #     executable='robot_state_publisher',
+    #     output='screen',
+    #     parameters=[robot_description]
+    # )
 
     # RViz
     # rviz_config_file = get_package_share_directory('moveit_servo') + "/config/demo_rviz_pose_tracking.rviz"
@@ -75,11 +75,11 @@ def generate_servo_test_description(*args,
     #                  parameters=[robot_description, robot_description_semantic, kinematics_yaml])
 
     # A node to publish world -> panda_link0 transform
-    static_tf = Node(package='tf2_ros',
-                     executable='static_transform_publisher',
-                     name='static_transform_publisher',
-                     output='log',
-                     arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'world', 'panda_link0'])
+    # static_tf = Node(package='tf2_ros',
+    #                  executable='static_transform_publisher',
+    #                  name='static_transform_publisher',
+    #                  output='log',
+    #                  arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'world', 'panda_link0'])
 
     # Fake joint driver
     fake_joint_driver_node = Node(package='fake_joint_driver',
@@ -97,6 +97,32 @@ def generate_servo_test_description(*args,
     #     output='screen',
     #     parameters=[robot_description, robot_description_semantic, kinematics_yaml, pose_tracking_params, servo_params]
     # )
+    # Component nodes for tf and Servo
+    test_container = ComposableNodeContainer(
+            name='test_pose_tracking_container',
+            namespace='/',
+            package='rclcpp_components',
+            executable='component_container',
+            composable_node_descriptions=[
+                ComposableNode(
+                    package='robot_state_publisher',
+                    plugin='robot_state_publisher::RobotStatePublisher',
+                    name='robot_state_publisher',
+                    parameters=[robot_description]),
+                ComposableNode(
+                    package='tf2_ros',
+                    plugin='tf2_ros::StaticTransformBroadcasterNode',
+                    name='static_tf2_broadcaster',
+                    parameters=[ {'/child_frame_id' : 'panda_link0', '/frame_id' : 'world'} ]),
+                ComposableNode(
+                    package='moveit_servo',
+                    plugin='moveit_servo::PoseTracking',
+                    name='pose_tracking',
+                    parameters=[pose_tracking_params, servo_params, robot_description, robot_description_semantic, kinematics_yaml])
+                    #extra_arguments=[{'use_intra_process_comm': True}])
+            ],
+            output='screen',
+    )
 
     pose_tracking_gtest = launch_testing.actions.GTest(
                 path=PathJoinSubstitution([LaunchConfiguration('test_binary_dir'), gtest_name]),
@@ -109,12 +135,14 @@ def generate_servo_test_description(*args,
                                              description='Binary directory of package '
                                                          'containing test executables'),
         fake_joint_driver_node,
-        robot_state_publisher,
-        static_tf,
+        #robot_state_publisher,
+        #static_tf,
         #rviz_node,
+        test_container,
         pose_tracking_gtest,
         launch_testing.actions.ReadyToTest()
-    ]), {'robot_state_publisher': robot_state_publisher, 'static_tf': static_tf, 'servo_gtest': pose_tracking_gtest, 'fake_joint_driver_node': fake_joint_driver_node }
+    ]), {'test_container': test_container ,'servo_gtest': pose_tracking_gtest, 'fake_joint_driver_node': fake_joint_driver_node }
+    #{'robot_stablte_puisher': robot_state_publisher, 'static_tf': static_tf, 'servo_gtest': pose_tracking_gtest, 'fake_joint_driver_node': fake_joint_driver_node }
 
 
 def generate_test_description():
@@ -124,12 +152,12 @@ def generate_test_description():
 
 class TestGTestProcessActive(unittest.TestCase):
 
-    def test_gtest_run_complete(self, proc_info, robot_state_publisher, static_tf, servo_gtest, fake_joint_driver_node):
+    def test_gtest_run_complete(self, proc_info, test_container, servo_gtest, fake_joint_driver_node):
         proc_info.assertWaitForShutdown(servo_gtest, timeout=4000.0)
 
 
 @launch_testing.post_shutdown_test()
 class TestGTestProcessPostShutdown(unittest.TestCase):
 
-    def test_gtest_pass(self, proc_info, robot_state_publisher, static_tf, servo_gtest, fake_joint_driver_node):
+    def test_gtest_pass(self, proc_info, test_container, servo_gtest, fake_joint_driver_node):
         launch_testing.asserts.assertExitCodes(proc_info, process=servo_gtest)

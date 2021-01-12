@@ -81,7 +81,7 @@ set(POSE_TRACKING pose_tracking)
 add_library(${POSE_TRACKING} SHARED src/pose_tracking.cpp)
 ament_target_dependencies(${POSE_TRACKING} ${THIS_PACKAGE_INCLUDE_DEPENDS})
 target_link_libraries(${POSE_TRACKING} ${SERVO_LIB_NAME})
-
+rclcpp_components_register_nodes(${POSE_TRACKING} "moveit_servo::PoseTracking")
 
 # An example of pose tracking
 set(POSE_TRACKING_DEMO_NAME servo_pose_tracking_demo)

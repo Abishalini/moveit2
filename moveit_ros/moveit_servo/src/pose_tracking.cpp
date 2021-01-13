@@ -367,5 +367,5 @@ bool PoseTracking::getCommandFrameTransform(geometry_msgs::msg::TransformStamped
 }  // namespace moveit_servo
 
 // Register the component with class_loader
-#include <rclcpp_components/register_node_macro.hpp>
-RCLCPP_COMPONENTS_REGISTER_NODE(moveit_servo::PoseTracking)
+// #include <rclcpp_components/register_node_macro.hpp>
+// RCLCPP_COMPONENTS_REGISTER_NODE(moveit_servo::PoseTracking)

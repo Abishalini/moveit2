@@ -1,7 +1,9 @@
 import os
 import yaml
 import unittest
+import pytest
 import launch
+import launch_ros
 import launch_testing.actions
 import launch_testing.asserts
 
@@ -114,19 +116,24 @@ def generate_servo_test_description(*args,
                     plugin='tf2_ros::StaticTransformBroadcasterNode',
                     name='static_tf2_broadcaster',
                     parameters=[ {'/child_frame_id' : 'panda_link0', '/frame_id' : 'world'} ]),
-                ComposableNode(
-                    package='moveit_servo',
-                    plugin='moveit_servo::PoseTracking',
-                    name='pose_tracking',
-                    parameters=[pose_tracking_params, servo_params, robot_description, robot_description_semantic, kinematics_yaml])
+                # ComposableNode(
+                #     package='moveit_servo',
+                #     plugin='moveit_servo::PoseTracking',
+                #     name='pose_tracking',
+                #     parameters=[pose_tracking_params, servo_params, robot_description, robot_description_semantic, kinematics_yaml])
                     #extra_arguments=[{'use_intra_process_comm': True}])
             ],
             output='screen',
     )
 
-    pose_tracking_gtest = launch_testing.actions.GTest(
-                path=PathJoinSubstitution([LaunchConfiguration('test_binary_dir'), gtest_name]),
-                timeout=40.0, output='screen'
+    # pose_tracking_gtest = launch_testing.actions.GTest(
+    #             path=PathJoinSubstitution([LaunchConfiguration('test_binary_dir'), gtest_name]),
+    #             timeout=40.0, output='screen'
+    #     )
+
+    pose_tracking_gtest = launch_ros.actions.Node(
+                executable=PathJoinSubstitution([LaunchConfiguration('test_binary_dir'), gtest_name]),
+                parameters=[robot_description, robot_description_semantic, pose_tracking_params, servo_params]
         )
 
     #return LaunchDescription([static_tf, fake_joint_driver_node, robot_state_publisher])

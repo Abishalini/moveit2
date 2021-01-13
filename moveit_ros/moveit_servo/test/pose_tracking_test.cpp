@@ -163,9 +163,10 @@ protected:
   rclcpp::Node::SharedPtr node_;
   rclcpp::Executor::SharedPtr executor_;
   std::thread executor_thread_;
+  
+  moveit_servo::ServoParametersPtr parameters_;
 
   planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor_;
-  moveit_servo::ServoParametersPtr parameters_;
   
   moveit_servo::PoseTrackingPtr tracker_;
   

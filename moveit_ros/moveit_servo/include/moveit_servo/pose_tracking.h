@@ -82,12 +82,11 @@ const std::unordered_map<PoseTrackingStatusCode, std::string> POSE_TRACKING_STAT
  * Class PoseTracking - subscribe to a target pose.
  * Servo toward the target pose.
  */
-class PoseTracking 
+class PoseTracking : public rclcpp::Node
 {
 public:
   /** \brief Constructor. Loads ROS parameters under the given namespace. */
-  PoseTracking(const rclcpp::Node::SharedPtr& node, const ServoParametersPtr& parameters,
-               const planning_scene_monitor::PlanningSceneMonitorPtr& planning_scene_monitor);
+  PoseTracking(const rclcpp::NodeOptions& options);
 
   PoseTrackingStatusCode moveToPose(const Eigen::Vector3d& positional_tolerance, const double angular_tolerance,
                                     const double target_pose_timeout);
@@ -123,6 +122,8 @@ public:
   std::unique_ptr<moveit_servo::Servo> servo_;
 
 private:
+  void init();
+
   /** \brief Load ROS parameters for controller settings. */
   void readROSParams();
 
@@ -154,8 +155,9 @@ private:
   void doPostMotionReset();
 
   rclcpp::Node::SharedPtr node_;
-  moveit_servo::ServoParametersPtr parameters_;
+  moveit_servo::ServoParametersPtr servo_parameters_;
 
+  std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
   planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor_;
   moveit::core::RobotModelConstPtr robot_model_;
   const moveit::core::JointModelGroup* joint_model_group_;
@@ -191,6 +193,8 @@ private:
   std::atomic<bool> stop_requested_;
 
   double angular_error_;
+  bool is_initialized_;
+
 };
 
 // using alias

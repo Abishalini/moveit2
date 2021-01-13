@@ -45,17 +45,60 @@ constexpr size_t LOG_THROTTLE_PERIOD = 10;
 
 namespace moveit_servo
 {
-PoseTracking::PoseTracking(const rclcpp::Node::SharedPtr& node, const ServoParametersPtr& parameters,
-                           const planning_scene_monitor::PlanningSceneMonitorPtr& planning_scene_monitor)
-  : node_(node)
-  , parameters_(parameters)
-  , planning_scene_monitor_(planning_scene_monitor)
+PoseTracking::PoseTracking(const rclcpp::NodeOptions& options) : Node("pose_tracking", options), is_initialized_(false)
+  , node_(shared_from_this())
   , loop_rate_(DEFAULT_LOOP_RATE)
   , transform_buffer_(node_->get_clock())
   , transform_listener_(transform_buffer_)
   , stop_requested_(false)
   , angular_error_(0)
 {
+  if (!options.use_intra_process_comms())
+  {
+    RCLCPP_WARN_STREAM(LOGGER, "Intra-process communication is disabled, consider enabling it by adding: "
+                               "\nextra_arguments=[{'use_intra_process_comms' : True}]\nto the PoseTracking composable node "
+                               "in the launch file");
+  }
+
+  // Connect to Servo ROS interfaces
+  target_pose_sub_ = node_->create_subscription<geometry_msgs::msg::PoseStamped>(
+      "target_pose", 1, std::bind(&PoseTracking::targetPoseCallback, this, std::placeholders::_1));
+}
+
+void PoseTracking::init(){
+
+  bool performed_initialization = true;
+
+  // Can set robot_description name from parameters
+  std::string robot_description_name = "robot_description";
+  this->get_parameter_or("robot_description_name", robot_description_name, robot_description_name);
+
+  // Set up planning_scene_monitor
+  node_ = shared_from_this();
+  tf_buffer_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
+  planning_scene_monitor_ = std::make_shared<planning_scene_monitor::PlanningSceneMonitor>(
+      node_, robot_description_name, tf_buffer_, "planning_scene_monitor");
+  
+  // Get the servo parameters
+  servo_parameters_ = std::make_shared<moveit_servo::ServoParameters>();
+  performed_initialization &= moveit_servo::readParameters(servo_parameters_, node_, LOGGER);
+  if (!performed_initialization)
+    RCLCPP_ERROR(LOGGER, "Could not get Servo parameters");
+
+  // Start the planning scene monitor
+  performed_initialization &= (planning_scene_monitor_->getPlanningScene() != nullptr);
+  if (performed_initialization)
+  {
+    planning_scene_monitor_->providePlanningSceneService();
+    planning_scene_monitor_->startStateMonitor(servo_parameters_->joint_topic);
+    planning_scene_monitor_->setPlanningScenePublishingFrequency(25);
+    planning_scene_monitor_->startPublishingPlanningScene(planning_scene_monitor::PlanningSceneMonitor::UPDATE_SCENE);
+    planning_scene_monitor_->startSceneMonitor();
+  }
+  else
+    RCLCPP_ERROR(LOGGER, "Planning scene not configured");
+
+  // Get pose tracking parameters
   readROSParams();
 
   robot_model_ = planning_scene_monitor_->getRobotModel();
@@ -67,17 +110,18 @@ PoseTracking::PoseTracking(const rclcpp::Node::SharedPtr& node, const ServoParam
   initializePID(z_pid_config_, cartesian_position_pids_);
   initializePID(angular_pid_config_, cartesian_orientation_pids_);
 
-  // Use the C++ interface that Servo provides
-  servo_ = std::make_unique<moveit_servo::Servo>(node_, parameters_, planning_scene_monitor_);
-  servo_->start();
-
-  // Connect to Servo ROS interfaces
-  target_pose_sub_ = node_->create_subscription<geometry_msgs::msg::PoseStamped>(
-      "target_pose", 1, std::bind(&PoseTracking::targetPoseCallback, this, std::placeholders::_1));
-
+  // Create Servo
+  servo_ = std::make_unique<moveit_servo::Servo>(node_, servo_parameters_, planning_scene_monitor_);
   // Publish outgoing twist commands to the Servo object
   twist_stamped_pub_ =
       node_->create_publisher<geometry_msgs::msg::TwistStamped>(servo_->getParameters()->cartesian_command_in_topic, 1);
+
+  // If we initialized properly, go ahead and start everything up
+  if (performed_initialization)
+    servo_->start();
+  else
+    RCLCPP_WARN(LOGGER, "Servo Service failed to initialize properly, not starting servoing");
+
 }
 
 PoseTrackingStatusCode PoseTracking::moveToPose(const Eigen::Vector3d& positional_tolerance,

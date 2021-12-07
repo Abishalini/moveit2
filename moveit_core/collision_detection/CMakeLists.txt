@@ -30,7 +30,6 @@ ament_target_dependencies(${MOVEIT_LIB_NAME}
 
 target_link_libraries(${MOVEIT_LIB_NAME}
   moveit_robot_state
-  moveit_planning_scene
 )
 
 # unit tests

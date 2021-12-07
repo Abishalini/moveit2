@@ -9,6 +9,7 @@ add_library(${MOVEIT_LIB_NAME} SHARED
   src/world.cpp
   src/world_diff.cpp
   src/collision_env.cpp
+  src/collision_plugin_cache.cpp
 )
 include(GenerateExportHeader)
 generate_export_header(${MOVEIT_LIB_NAME})
@@ -29,6 +30,7 @@ ament_target_dependencies(${MOVEIT_LIB_NAME}
 
 target_link_libraries(${MOVEIT_LIB_NAME}
   moveit_robot_state
+  moveit_planning_scene
 )
 
 # unit tests

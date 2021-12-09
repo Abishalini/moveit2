@@ -32,6 +32,7 @@ target_link_libraries(${BUTTERWORTH_FILTER_LIB}
   moveit_robot_model
 )
 ament_target_dependencies(${BUTTERWORTH_FILTER_LIB}
+  class_loader
   srdfdom  # include dependency from moveit_robot_model
 )
 

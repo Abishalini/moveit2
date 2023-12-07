@@ -112,7 +112,7 @@ bool MoveGroupCartesianPathService::computeService(
       link_name = jmg->getLinkModelNames().back();
 
     bool ok = true;
-    EigenSTL::vector_Isometry3d waypoints(req->waypoints.size());
+    std::vector<Eigen::Isometry3d> waypoints(req->waypoints.size());
     const std::string& default_frame = context_->planning_scene_monitor_->getRobotModel()->getModelFrame();
     bool no_transform = req->header.frame_id.empty() ||
                         moveit::core::Transforms::sameFrame(req->header.frame_id, default_frame) ||

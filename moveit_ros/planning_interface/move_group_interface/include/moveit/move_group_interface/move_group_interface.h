@@ -588,7 +588,8 @@ public:
       This new orientation target replaces any pre-existing JointValueTarget or
       pre-existing Position, Orientation, or Pose target(s) for this \e
       end_effector_link. */
-  bool setPoseTargets(const EigenSTL::vector_Isometry3d& end_effector_pose, const std::string& end_effector_link = "");
+  bool setPoseTargets(const std::vector<Eigen::Isometry3d>& end_effector_pose,
+                      const std::string& end_effector_link = "");
 
   /** \brief Set goal poses for \e end_effector_link.
 

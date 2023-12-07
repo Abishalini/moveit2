@@ -652,7 +652,7 @@ protected:
   bool has_offset_;                                /**< \brief Whether the offset is substantially different than 0.0 */
   std::vector<bodies::BodyPtr> constraint_region_; /**< \brief The constraint region vector */
   /** \brief The constraint region pose vector. All isometries are guaranteed to be valid. */
-  EigenSTL::vector_Isometry3d constraint_region_pose_;
+  std::vector<Eigen::Isometry3d> constraint_region_pose_;
   bool mobile_frame_;                         /**< \brief Whether or not a mobile frame is employed*/
   std::string constraint_frame_id_;           /**< \brief The constraint frame id */
   const moveit::core::LinkModel* link_model_; /**< \brief The link model constraint subject */

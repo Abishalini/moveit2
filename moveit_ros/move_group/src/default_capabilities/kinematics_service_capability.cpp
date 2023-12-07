@@ -133,7 +133,7 @@ void MoveGroupKinematicsService::computeIK(moveit_msgs::msg::PositionIKRequest& 
       else
       {
         bool ok = true;
-        EigenSTL::vector_Isometry3d req_poses(req.pose_stamped_vector.size());
+        std::vector<Eigen::Isometry3d> req_poses(req.pose_stamped_vector.size());
         for (std::size_t k = 0; k < req.pose_stamped_vector.size(); ++k)
         {
           geometry_msgs::msg::PoseStamped msg = req.pose_stamped_vector[k];

@@ -234,7 +234,7 @@ public:
 
   BodyDecomposition(const shapes::ShapeConstPtr& shape, double resolution, double padding = 0.01);
 
-  BodyDecomposition(const std::vector<shapes::ShapeConstPtr>& shapes, const EigenSTL::vector_Isometry3d& poses,
+  BodyDecomposition(const std::vector<shapes::ShapeConstPtr>& shapes, const std::vector<Eigen::Isometry3d>& poses,
                     double resolution, double padding);
 
   ~BodyDecomposition();
@@ -286,7 +286,7 @@ public:
   }
 
 protected:
-  void init(const std::vector<shapes::ShapeConstPtr>& shapes, const EigenSTL::vector_Isometry3d& poses,
+  void init(const std::vector<shapes::ShapeConstPtr>& shapes, const std::vector<Eigen::Isometry3d>& poses,
             double resolution, double padding);
 
 protected:

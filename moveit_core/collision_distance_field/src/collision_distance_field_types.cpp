@@ -271,20 +271,20 @@ bool getCollisionSphereCollision(const distance_field::DistanceField* distance_f
 BodyDecomposition::BodyDecomposition(const shapes::ShapeConstPtr& shape, double resolution, double padding)
 {
   std::vector<shapes::ShapeConstPtr> shapes;
-  EigenSTL::vector_Isometry3d poses(1, Eigen::Isometry3d::Identity());
+  std::vector<Eigen::Isometry3d> poses(1, Eigen::Isometry3d::Identity());
 
   shapes.push_back(shape);
   init(shapes, poses, resolution, padding);
 }
 
 BodyDecomposition::BodyDecomposition(const std::vector<shapes::ShapeConstPtr>& shapes,
-                                     const EigenSTL::vector_Isometry3d& poses, double resolution, double padding)
+                                     const std::vector<Eigen::Isometry3d>& poses, double resolution, double padding)
 {
   init(shapes, poses, resolution, padding);
 }
 
-void BodyDecomposition::init(const std::vector<shapes::ShapeConstPtr>& shapes, const EigenSTL::vector_Isometry3d& poses,
-                             double resolution, double padding)
+void BodyDecomposition::init(const std::vector<shapes::ShapeConstPtr>& shapes,
+                             const std::vector<Eigen::Isometry3d>& poses, double resolution, double padding)
 {
   bodies_.clear();
   for (unsigned int i{ 0 }; i < shapes.size(); ++i)

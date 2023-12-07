@@ -161,7 +161,7 @@ public:
       of a link that is used for collision checking may have
       a different offset itself, with respect to the origin.
       The transform is guaranteed to be a valid isometry. */
-  const EigenSTL::vector_Isometry3d& getCollisionOriginTransforms() const
+  const std::vector<Eigen::Isometry3d>& getCollisionOriginTransforms() const
   {
     return collision_origin_transform_;
   }
@@ -178,7 +178,7 @@ public:
     return shapes_;
   }
 
-  void setGeometry(const std::vector<shapes::ShapeConstPtr>& shapes, const EigenSTL::vector_Isometry3d& origins);
+  void setGeometry(const std::vector<shapes::ShapeConstPtr>& shapes, const std::vector<Eigen::Isometry3d>& origins);
 
   /** \brief Get the extents of the link's geometry (dimensions of axis-aligned bounding box around all shapes that make
      up the
@@ -254,7 +254,7 @@ private:
   Eigen::Isometry3d joint_origin_transform_;
 
   /** \brief The constant transform applied to the collision geometry of the link (local) */
-  EigenSTL::vector_Isometry3d collision_origin_transform_;
+  std::vector<Eigen::Isometry3d> collision_origin_transform_;
 
   /** \brief Flag indicating if the constant transform applied to the collision geometry of the link (local) is
    * identity; use int instead of bool to avoid bit operations */

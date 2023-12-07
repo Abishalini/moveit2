@@ -76,7 +76,7 @@ inline void World::addToObjectInternal(const ObjectPtr& obj, const shapes::Shape
 
 void World::addToObject(const std::string& object_id, const Eigen::Isometry3d& pose,
                         const std::vector<shapes::ShapeConstPtr>& shapes,
-                        const EigenSTL::vector_Isometry3d& shape_poses)
+                        const std::vector<Eigen::Isometry3d>& shape_poses)
 {
   if (shapes.size() != shape_poses.size())
   {
@@ -219,7 +219,7 @@ const Eigen::Isometry3d& World::getGlobalShapeTransform(const std::string& objec
   }
 }
 
-const EigenSTL::vector_Isometry3d& World::getGlobalShapeTransforms(const std::string& object_id) const
+const std::vector<Eigen::Isometry3d>& World::getGlobalShapeTransforms(const std::string& object_id) const
 {
   const auto it = objects_.find(object_id);
   if (it != objects_.end())
@@ -229,7 +229,7 @@ const EigenSTL::vector_Isometry3d& World::getGlobalShapeTransforms(const std::st
   else
   {
     RCLCPP_ERROR_STREAM(getLogger(), "Could not find global shape transforms for object " << object_id);
-    static const EigenSTL::vector_Isometry3d IDENTITY_TRANSFORM_VECTOR;
+    static const std::vector<Eigen::Isometry3d> IDENTITY_TRANSFORM_VECTOR;
     return IDENTITY_TRANSFORM_VECTOR;
   }
 }

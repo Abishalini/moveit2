@@ -98,12 +98,12 @@ public:
     /** \brief The poses of the corresponding entries in shapes_, relative to the object pose.
      *
      * @copydetails shapes_ */
-    EigenSTL::vector_Isometry3d shape_poses_;
+    std::vector<Eigen::Isometry3d> shape_poses_;
 
     /** \brief The poses of the corresponding entries in shapes_, relative to the world frame.
      *
      * @copydetails shapes_ */
-    EigenSTL::vector_Isometry3d global_shape_poses_;
+    std::vector<Eigen::Isometry3d> global_shape_poses_;
 
     /** \brief Transforms from the object pose to subframes on the object.
      *  Use them to define points of interest on an object to plan with
@@ -173,19 +173,19 @@ public:
 
   /** \brief Get the global transforms to the shapes of an object.
    * This function is used to construct the collision environment. */
-  const EigenSTL::vector_Isometry3d& getGlobalShapeTransforms(const std::string& object_id) const;
+  const std::vector<Eigen::Isometry3d>& getGlobalShapeTransforms(const std::string& object_id) const;
 
   /** \brief Add a pose and shapes to an object in the map.
    * This function makes repeated calls to addToObjectInternal() to add the
    * shapes one by one.*/
   void addToObject(const std::string& object_id, const Eigen::Isometry3d& pose,
-                   const std::vector<shapes::ShapeConstPtr>& shapes, const EigenSTL::vector_Isometry3d& shape_poses);
+                   const std::vector<shapes::ShapeConstPtr>& shapes, const std::vector<Eigen::Isometry3d>& shape_poses);
 
   /** \brief Add shapes to an object in the map.
    * This function makes repeated calls to addToObjectInternal() to add the
    * shapes one by one. */
   void addToObject(const std::string& object_id, const std::vector<shapes::ShapeConstPtr>& shapes,
-                   const EigenSTL::vector_Isometry3d& shape_poses)
+                   const std::vector<Eigen::Isometry3d>& shape_poses)
   {
     addToObject(object_id, Eigen::Isometry3d::Identity(), shapes, shape_poses);
   }
@@ -198,7 +198,8 @@ public:
   void addToObject(const std::string& object_id, const Eigen::Isometry3d& pose, const shapes::ShapeConstPtr& shape,
                    const Eigen::Isometry3d& shape_pose)
   {
-    addToObject(object_id, pose, std::vector<shapes::ShapeConstPtr>{ shape }, EigenSTL::vector_Isometry3d{ shape_pose });
+    addToObject(object_id, pose, std::vector<shapes::ShapeConstPtr>{ shape },
+                std::vector<Eigen::Isometry3d>{ shape_pose });
   }
 
   /** \brief Add a shape to an object.
@@ -209,7 +210,7 @@ public:
   void addToObject(const std::string& object_id, const shapes::ShapeConstPtr& shape, const Eigen::Isometry3d& shape_pose)
   {
     addToObject(object_id, Eigen::Isometry3d::Identity(), std::vector<shapes::ShapeConstPtr>{ shape },
-                EigenSTL::vector_Isometry3d{ shape_pose });
+                std::vector<Eigen::Isometry3d>{ shape_pose });
   }
 
   /** \brief Update the pose of a shape in an object. Shape equality is

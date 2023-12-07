@@ -1463,7 +1463,7 @@ bool PlanningScene::processAttachedCollisionObjectMsg(const moveit_msgs::msg::At
       // items to build the attached object from (filled from existing world object or message)
       Eigen::Isometry3d object_pose_in_link;
       std::vector<shapes::ShapeConstPtr> shapes;
-      EigenSTL::vector_Isometry3d shape_poses;
+      std::vector<Eigen::Isometry3d> shape_poses;
       moveit::core::FixedTransformsMap subframe_poses;
 
       // STEP 1: Obtain info about object to be attached.
@@ -1694,7 +1694,7 @@ bool PlanningScene::processCollisionObjectMsg(const moveit_msgs::msg::CollisionO
 bool PlanningScene::shapesAndPosesFromCollisionObjectMessage(const moveit_msgs::msg::CollisionObject& object,
                                                              Eigen::Isometry3d& object_pose,
                                                              std::vector<shapes::ShapeConstPtr>& shapes,
-                                                             EigenSTL::vector_Isometry3d& shape_poses)
+                                                             std::vector<Eigen::Isometry3d>& shape_poses)
 {
   if (object.primitives.size() < object.primitive_poses.size())
   {
@@ -1799,7 +1799,7 @@ bool PlanningScene::processCollisionObjectAdd(const moveit_msgs::msg::CollisionO
   const Eigen::Isometry3d& world_to_object_header_transform = getFrameTransform(object.header.frame_id);
   Eigen::Isometry3d header_to_pose_transform;
   std::vector<shapes::ShapeConstPtr> shapes;
-  EigenSTL::vector_Isometry3d shape_poses;
+  std::vector<Eigen::Isometry3d> shape_poses;
   if (!shapesAndPosesFromCollisionObjectMessage(object, header_to_pose_transform, shapes, shape_poses))
     return false;
   const Eigen::Isometry3d object_frame_transform = world_to_object_header_transform * header_to_pose_transform;

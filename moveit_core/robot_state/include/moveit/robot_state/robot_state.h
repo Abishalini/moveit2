@@ -1011,7 +1011,7 @@ public:
       @param tips The names of the frames for which IK is attempted.
       @param timeout The timeout passed to the kinematics solver on each attempt
       @param constraint A state validity constraint to be required for IK solutions */
-  bool setFromIK(const JointModelGroup* group, const EigenSTL::vector_Isometry3d& poses,
+  bool setFromIK(const JointModelGroup* group, const std::vector<Eigen::Isometry3d>& poses,
                  const std::vector<std::string>& tips, double timeout = 0.0,
                  const GroupStateValidityCallbackFn& constraint = GroupStateValidityCallbackFn(),
                  const kinematics::KinematicsQueryOptions& options = kinematics::KinematicsQueryOptions(),
@@ -1027,7 +1027,7 @@ public:
       @param consistency_limits This specifies the desired distance between the solution and the seed state
       @param timeout The timeout passed to the kinematics solver on each attempt
       @param constraint A state validity constraint to be required for IK solutions */
-  bool setFromIK(const JointModelGroup* group, const EigenSTL::vector_Isometry3d& poses,
+  bool setFromIK(const JointModelGroup* group, const std::vector<Eigen::Isometry3d>& poses,
                  const std::vector<std::string>& tips, const std::vector<std::vector<double>>& consistency_limits,
                  double timeout = 0.0, const GroupStateValidityCallbackFn& constraint = GroupStateValidityCallbackFn(),
                  const kinematics::KinematicsQueryOptions& options = kinematics::KinematicsQueryOptions(),
@@ -1041,7 +1041,7 @@ public:
       @param consistency_limits This specifies the desired distance between the solution and the seed state
       @param timeout The timeout passed to the kinematics solver on each attempt
       @param constraint A state validity constraint to be required for IK solutions */
-  bool setFromIKSubgroups(const JointModelGroup* group, const EigenSTL::vector_Isometry3d& poses,
+  bool setFromIKSubgroups(const JointModelGroup* group, const std::vector<Eigen::Isometry3d>& poses,
                           const std::vector<std::string>& tips,
                           const std::vector<std::vector<double>>& consistency_limits, double timeout = 0.0,
                           const GroupStateValidityCallbackFn& constraint = GroupStateValidityCallbackFn(),
@@ -1542,7 +1542,7 @@ public:
    * corresponding object from that world to avoid having collisions
    * detected against it. */
   void attachBody(const std::string& id, const Eigen::Isometry3d& pose,
-                  const std::vector<shapes::ShapeConstPtr>& shapes, const EigenSTL::vector_Isometry3d& shape_poses,
+                  const std::vector<shapes::ShapeConstPtr>& shapes, const std::vector<Eigen::Isometry3d>& shape_poses,
                   const std::set<std::string>& touch_links, const std::string& link_name,
                   const trajectory_msgs::msg::JointTrajectory& detach_posture = trajectory_msgs::msg::JointTrajectory(),
                   const moveit::core::FixedTransformsMap& subframe_poses = moveit::core::FixedTransformsMap());
@@ -1565,7 +1565,7 @@ public:
    * corresponding object from that world to avoid having collisions
    * detected against it. */
   void attachBody(const std::string& id, const Eigen::Isometry3d& pose,
-                  const std::vector<shapes::ShapeConstPtr>& shapes, const EigenSTL::vector_Isometry3d& shape_poses,
+                  const std::vector<shapes::ShapeConstPtr>& shapes, const std::vector<Eigen::Isometry3d>& shape_poses,
                   const std::vector<std::string>& touch_links, const std::string& link_name,
                   const trajectory_msgs::msg::JointTrajectory& detach_posture = trajectory_msgs::msg::JointTrajectory(),
                   const moveit::core::FixedTransformsMap& subframe_poses = moveit::core::FixedTransformsMap())

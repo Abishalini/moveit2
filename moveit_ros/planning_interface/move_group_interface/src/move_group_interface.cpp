@@ -1846,7 +1846,8 @@ bool MoveGroupInterface::setPoseTarget(const geometry_msgs::msg::PoseStamped& ta
   return setPoseTargets(targets, end_effector_link);
 }
 
-bool MoveGroupInterface::setPoseTargets(const EigenSTL::vector_Isometry3d& target, const std::string& end_effector_link)
+bool MoveGroupInterface::setPoseTargets(const std::vector<Eigen::Isometry3d>& target,
+                                        const std::string& end_effector_link)
 {
   std::vector<geometry_msgs::msg::PoseStamped> pose_out(target.size());
   rclcpp::Time tm = impl_->getClock()->now();

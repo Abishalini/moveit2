@@ -234,7 +234,7 @@ TEST_F(LoadPlanningModelsPr2, FullTest)
 
   const auto identity = Eigen::Isometry3d::Identity();
   std::vector<shapes::ShapeConstPtr> shapes;
-  EigenSTL::vector_Isometry3d poses;
+  std::vector<Eigen::Isometry3d> poses;
   shapes::Shape* shape = new shapes::Box(.1, .1, .1);
   shapes.push_back(shapes::ShapeConstPtr(shape));
   poses.push_back(identity);
@@ -273,7 +273,7 @@ TEST_F(LoadPlanningModelsPr2, ObjectPoseAndSubframes)
   ks.setToDefaultValues();
 
   std::vector<shapes::ShapeConstPtr> shapes;
-  EigenSTL::vector_Isometry3d poses;
+  std::vector<Eigen::Isometry3d> poses;
   shapes::Shape* shape = new shapes::Box(.1, .1, .1);
   shapes.push_back(shapes::ShapeConstPtr(shape));
   poses.push_back(Eigen::Isometry3d::Identity());

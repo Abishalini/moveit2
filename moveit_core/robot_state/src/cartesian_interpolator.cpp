@@ -299,7 +299,7 @@ CartesianInterpolator::Percentage CartesianInterpolator::computeCartesianPath(
 
 CartesianInterpolator::Percentage CartesianInterpolator::computeCartesianPath(
     RobotState* start_state, const JointModelGroup* group, std::vector<RobotStatePtr>& path, const LinkModel* link,
-    const EigenSTL::vector_Isometry3d& waypoints, bool global_reference_frame, const MaxEEFStep& max_step,
+    const std::vector<Eigen::Isometry3d>& waypoints, bool global_reference_frame, const MaxEEFStep& max_step,
     const JumpThreshold& jump_threshold, const GroupStateValidityCallbackFn& validCallback,
     const kinematics::KinematicsQueryOptions& options, const kinematics::KinematicsBase::IKCostFn& cost_function,
     const Eigen::Isometry3d& link_offset)

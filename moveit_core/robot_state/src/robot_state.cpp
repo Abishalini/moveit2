@@ -652,7 +652,7 @@ void RobotState::updateCollisionBodyTransforms()
 
     for (const LinkModel* link : links)
     {
-      const EigenSTL::vector_Isometry3d& ot = link->getCollisionOriginTransforms();
+      const std::vector<Eigen::Isometry3d>& ot = link->getCollisionOriginTransforms();
       const std::vector<int>& ot_id = link->areCollisionOriginTransformsIdentity();
       const int index_co = link->getFirstCollisionBodyTransformIndex();
       const int index_l = link->getLinkIndex();
@@ -1017,7 +1017,7 @@ void RobotState::attachBody(std::unique_ptr<AttachedBody> attached_body)
 
 void RobotState::attachBody(const std::string& id, const Eigen::Isometry3d& pose,
                             const std::vector<shapes::ShapeConstPtr>& shapes,
-                            const EigenSTL::vector_Isometry3d& shape_poses, const std::set<std::string>& touch_links,
+                            const std::vector<Eigen::Isometry3d>& shape_poses, const std::set<std::string>& touch_links,
                             const std::string& link, const trajectory_msgs::msg::JointTrajectory& detach_posture,
                             const FixedTransformsMap& subframe_poses)
 {
@@ -1581,7 +1581,7 @@ bool RobotState::setFromIK(const JointModelGroup* jmg, const Eigen::Isometry3d& 
                            const kinematics::KinematicsBase::IKCostFn& cost_function)
 {
   // Convert from single pose and tip to vectors
-  EigenSTL::vector_Isometry3d poses;
+  std::vector<Eigen::Isometry3d> poses;
   poses.push_back(pose_in);
 
   std::vector<std::string> tips;
@@ -1593,7 +1593,7 @@ bool RobotState::setFromIK(const JointModelGroup* jmg, const Eigen::Isometry3d& 
   return setFromIK(jmg, poses, tips, consistency_limits, timeout, constraint, options, cost_function);
 }
 
-bool RobotState::setFromIK(const JointModelGroup* jmg, const EigenSTL::vector_Isometry3d& poses_in,
+bool RobotState::setFromIK(const JointModelGroup* jmg, const std::vector<Eigen::Isometry3d>& poses_in,
                            const std::vector<std::string>& tips_in, double timeout,
                            const GroupStateValidityCallbackFn& constraint,
                            const kinematics::KinematicsQueryOptions& options,
@@ -1603,7 +1603,7 @@ bool RobotState::setFromIK(const JointModelGroup* jmg, const EigenSTL::vector_Is
   return setFromIK(jmg, poses_in, tips_in, consistency_limits, timeout, constraint, options, cost_function);
 }
 
-bool RobotState::setFromIK(const JointModelGroup* jmg, const EigenSTL::vector_Isometry3d& poses_in,
+bool RobotState::setFromIK(const JointModelGroup* jmg, const std::vector<Eigen::Isometry3d>& poses_in,
                            const std::vector<std::string>& tips_in,
                            const std::vector<std::vector<double> >& consistency_limit_sets, double timeout,
                            const GroupStateValidityCallbackFn& constraint,
@@ -1843,7 +1843,7 @@ bool RobotState::setFromIK(const JointModelGroup* jmg, const EigenSTL::vector_Is
   return false;
 }
 
-bool RobotState::setFromIKSubgroups(const JointModelGroup* jmg, const EigenSTL::vector_Isometry3d& poses_in,
+bool RobotState::setFromIKSubgroups(const JointModelGroup* jmg, const std::vector<Eigen::Isometry3d>& poses_in,
                                     const std::vector<std::string>& tips_in,
                                     const std::vector<std::vector<double> >& consistency_limits, double timeout,
                                     const GroupStateValidityCallbackFn& constraint,
@@ -1900,7 +1900,7 @@ bool RobotState::setFromIKSubgroups(const JointModelGroup* jmg, const EigenSTL::
   }
 
   // Make non-const versions
-  EigenSTL::vector_Isometry3d transformed_poses = poses_in;
+  std::vector<Eigen::Isometry3d> transformed_poses = poses_in;
   std::vector<std::string> pose_frames = tips_in;
 
   // Each each pose's tip frame naming
@@ -2066,7 +2066,7 @@ void RobotState::computeAABB(std::vector<double>& aabb) const
   }
   for (const auto& it : attached_body_map_)
   {
-    const EigenSTL::vector_Isometry3d& transforms = it.second->getGlobalCollisionBodyTransforms();
+    const std::vector<Eigen::Isometry3d>& transforms = it.second->getGlobalCollisionBodyTransforms();
     const std::vector<shapes::ShapeConstPtr>& shapes = it.second->getShapes();
     for (std::size_t i = 0; i < transforms.size(); ++i)
     {

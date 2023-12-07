@@ -92,7 +92,7 @@ TEST(World, AddRemoveShape)
 
   {
     std::vector<shapes::ShapeConstPtr> shapes;
-    EigenSTL::vector_Isometry3d poses;
+    std::vector<Eigen::Isometry3d> poses;
 
     shapes.push_back(box);
     shapes.push_back(cyl);

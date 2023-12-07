@@ -291,7 +291,7 @@ TEST_F(DistanceFieldCollisionDetectionTester, AttachedBodyTester)
 
   const auto identity = Eigen::Isometry3d::Identity();
   std::vector<shapes::ShapeConstPtr> shapes;
-  EigenSTL::vector_Isometry3d poses;
+  std::vector<Eigen::Isometry3d> poses;
   shapes.push_back(std::make_shared<const shapes::Box>(.25, .25, .25));
   poses.push_back(identity);
   std::set<std::string> touch_links;

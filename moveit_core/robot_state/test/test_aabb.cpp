@@ -228,7 +228,7 @@ TEST_F(TestAABB, TestPR2)
   for (std::vector<const moveit::core::AttachedBody*>::const_iterator it = attached_bodies.begin();
        it != attached_bodies.end(); ++it)
   {
-    const EigenSTL::vector_Isometry3d& transforms = (*it)->getGlobalCollisionBodyTransforms();
+    const std::vector<Eigen::Isometry3d>& transforms = (*it)->getGlobalCollisionBodyTransforms();
     const std::vector<shapes::ShapeConstPtr>& shapes = (*it)->getShapes();
     for (std::size_t i = 0; i < transforms.size(); ++i)
     {

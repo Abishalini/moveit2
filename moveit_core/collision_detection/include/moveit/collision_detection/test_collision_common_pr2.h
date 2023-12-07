@@ -313,7 +313,7 @@ TYPED_TEST_P(CollisionDetectorTest, AttachedBodyTester)
 
   shape = new shapes::Box(.1, .1, .1);
   std::vector<shapes::ShapeConstPtr> shapes;
-  EigenSTL::vector_Isometry3d poses;
+  std::vector<Eigen::Isometry3d> poses;
   shapes.push_back(shapes::ShapeConstPtr(shape));
   poses.push_back(Eigen::Isometry3d::Identity());
   std::vector<std::string> touch_links;
@@ -376,7 +376,7 @@ TYPED_TEST_P(CollisionDetectorTest, DiffSceneTester)
 
   shapes[0].reset(shapes::createMeshFromResource(this->kinect_dae_resource_));
 
-  EigenSTL::vector_Isometry3d poses;
+  std::vector<Eigen::Isometry3d> poses;
   poses.push_back(Eigen::Isometry3d::Identity());
 
   std::vector<std::string> touch_links;
@@ -445,7 +445,7 @@ TYPED_TEST_P(CollisionDetectorTest, ConvertObjectToAttached)
   robot_state1.attachBody("kinect", identity_transform, object->shapes_, object->shape_poses_, touch_links,
                           "r_gripper_palm_link");
 
-  EigenSTL::vector_Isometry3d other_poses;
+  std::vector<Eigen::Isometry3d> other_poses;
   other_poses.push_back(pos2);
 
   // This creates a new set of constant properties for the attached body, which happens to be the same as the one above;
@@ -473,7 +473,7 @@ TYPED_TEST_P(CollisionDetectorTest, ConvertObjectToAttached)
 
 TYPED_TEST_P(CollisionDetectorTest, TestCollisionMapAdditionSpeed)
 {
-  EigenSTL::vector_Isometry3d poses;
+  std::vector<Eigen::Isometry3d> poses;
   std::vector<shapes::ShapeConstPtr> shapes;
   for (unsigned int i = 0; i < 10000; ++i)
   {
@@ -525,7 +525,7 @@ TYPED_TEST_P(CollisionDetectorTest, TestChangingShapeSize)
 
   ASSERT_FALSE(res1.collision);
 
-  EigenSTL::vector_Isometry3d poses;
+  std::vector<Eigen::Isometry3d> poses;
   std::vector<shapes::ShapeConstPtr> shapes;
   for (unsigned int i = 0; i < 5; ++i)
   {

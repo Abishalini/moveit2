@@ -714,7 +714,7 @@ public:
   bool shapesAndPosesFromCollisionObjectMessage(const moveit_msgs::msg::CollisionObject& object,
                                                 Eigen::Isometry3d& object_pose_in_header_frame,
                                                 std::vector<shapes::ShapeConstPtr>& shapes,
-                                                EigenSTL::vector_Isometry3d& shape_poses);
+                                                std::vector<Eigen::Isometry3d>& shape_poses);
 
   bool processCollisionObjectMsg(const moveit_msgs::msg::CollisionObject& object);
   bool processAttachedCollisionObjectMsg(const moveit_msgs::msg::AttachedCollisionObject& object);

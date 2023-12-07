@@ -1180,7 +1180,7 @@ LinkModel* RobotModel::constructLinkModel(const urdf::Link* urdf_link)
                                            urdf_link->collision_array;
 
   std::vector<shapes::ShapeConstPtr> shapes;
-  EigenSTL::vector_Isometry3d poses;
+  std::vector<Eigen::Isometry3d> poses;
 
   for (const urdf::CollisionSharedPtr& col : col_array)
   {

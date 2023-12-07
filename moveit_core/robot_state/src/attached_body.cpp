@@ -44,7 +44,7 @@ namespace core
 {
 AttachedBody::AttachedBody(const LinkModel* parent, const std::string& id, const Eigen::Isometry3d& pose,
                            const std::vector<shapes::ShapeConstPtr>& shapes,
-                           const EigenSTL::vector_Isometry3d& shape_poses, const std::set<std::string>& touch_links,
+                           const std::vector<Eigen::Isometry3d>& shape_poses, const std::set<std::string>& touch_links,
                            const trajectory_msgs::msg::JointTrajectory& detach_posture,
                            const FixedTransformsMap& subframe_poses)
   : parent_link_model_(parent)

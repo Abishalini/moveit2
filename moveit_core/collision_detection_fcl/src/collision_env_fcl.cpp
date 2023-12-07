@@ -235,7 +235,7 @@ void CollisionEnvFCL::constructFCLObjectRobot(const moveit::core::RobotState& st
   {
     std::vector<FCLGeometryConstPtr> objs;
     getAttachedBodyObjects(body, objs);
-    const EigenSTL::vector_Isometry3d& ab_t = body->getGlobalCollisionBodyTransforms();
+    const std::vector<Eigen::Isometry3d>& ab_t = body->getGlobalCollisionBodyTransforms();
     for (std::size_t k = 0; k < objs.size(); ++k)
     {
       if (objs[k]->collision_geometry_)

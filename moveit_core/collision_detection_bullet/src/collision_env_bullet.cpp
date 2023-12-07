@@ -340,7 +340,7 @@ void CollisionEnvBullet::addAttachedObjects(const moveit::core::RobotState& stat
 
   for (const moveit::core::AttachedBody*& body : attached_bodies)
   {
-    const EigenSTL::vector_Isometry3d& attached_body_transform = body->getGlobalCollisionBodyTransforms();
+    const std::vector<Eigen::Isometry3d>& attached_body_transform = body->getGlobalCollisionBodyTransforms();
 
     std::vector<collision_detection_bullet::CollisionObjectType> collision_object_types(
         attached_body_transform.size(), collision_detection_bullet::CollisionObjectType::USE_SHAPE_TYPE);

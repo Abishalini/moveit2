@@ -64,7 +64,7 @@ public:
    * detach_posture may describe a detach motion for the gripper when placing the object.
    * The shape and subframe poses are relative to the \e pose, and \e pose is relative to the parent link. */
   AttachedBody(const LinkModel* parent, const std::string& id, const Eigen::Isometry3d& pose,
-               const std::vector<shapes::ShapeConstPtr>& shapes, const EigenSTL::vector_Isometry3d& shape_poses,
+               const std::vector<shapes::ShapeConstPtr>& shapes, const std::vector<Eigen::Isometry3d>& shape_poses,
                const std::set<std::string>& touch_links, const trajectory_msgs::msg::JointTrajectory& detach_posture,
                const moveit::core::FixedTransformsMap& subframe_poses = moveit::core::FixedTransformsMap());
 
@@ -108,7 +108,7 @@ public:
 
   /** \brief Get the shape poses (the transforms to the shapes of this body, relative to the pose). The returned
    *  transforms are guaranteed to be valid isometries. */
-  const EigenSTL::vector_Isometry3d& getShapePoses() const
+  const std::vector<Eigen::Isometry3d>& getShapePoses() const
   {
     return shape_poses_;
   }
@@ -128,7 +128,7 @@ public:
 
   /** \brief Get the fixed transforms (the transforms to the shapes of this body, relative to the link). The returned
    *  transforms are guaranteed to be valid isometries. */
-  const EigenSTL::vector_Isometry3d& getShapePosesInLinkFrame() const
+  const std::vector<Eigen::Isometry3d>& getShapePosesInLinkFrame() const
   {
     return shape_poses_in_link_frame_;
   }
@@ -188,7 +188,7 @@ public:
 
   /** \brief Get the global transforms (in world frame) for the collision bodies. The returned transforms are
    *  guaranteed to be valid isometries. */
-  const EigenSTL::vector_Isometry3d& getGlobalCollisionBodyTransforms() const
+  const std::vector<Eigen::Isometry3d>& getGlobalCollisionBodyTransforms() const
   {
     return global_collision_body_transforms_;
   }
@@ -219,13 +219,13 @@ private:
   std::vector<shapes::ShapeConstPtr> shapes_;
 
   /** \brief The transforms from the object's pose to the object's geometries*/
-  EigenSTL::vector_Isometry3d shape_poses_;
+  std::vector<Eigen::Isometry3d> shape_poses_;
 
   /** \brief The transforms from the link to the object's geometries*/
-  EigenSTL::vector_Isometry3d shape_poses_in_link_frame_;
+  std::vector<Eigen::Isometry3d> shape_poses_in_link_frame_;
 
   /** \brief The global transforms for the attached bodies (computed by forward kinematics) */
-  EigenSTL::vector_Isometry3d global_collision_body_transforms_;
+  std::vector<Eigen::Isometry3d> global_collision_body_transforms_;
 
   /** \brief The set of links this body is allowed to touch */
   std::set<std::string> touch_links_;

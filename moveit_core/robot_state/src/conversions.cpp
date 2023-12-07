@@ -212,7 +212,7 @@ void attachedBodyToMsg(const AttachedBody& attached_body, moveit_msgs::msg::Atta
 
   aco.object.operation = moveit_msgs::msg::CollisionObject::ADD;
   const std::vector<shapes::ShapeConstPtr>& ab_shapes = attached_body.getShapes();
-  const EigenSTL::vector_Isometry3d& shape_poses = attached_body.getShapePoses();
+  const std::vector<Eigen::Isometry3d>& shape_poses = attached_body.getShapePoses();
   ShapeVisitorAddToCollisionObject sv(&aco.object);
   aco.object.primitives.clear();
   aco.object.meshes.clear();
@@ -279,7 +279,7 @@ void msgToAttachedBody(const Transforms* tf, const moveit_msgs::msg::AttachedCol
         tf2::fromMsg(aco.object.pose, object_pose);
 
         std::vector<shapes::ShapeConstPtr> shapes;
-        EigenSTL::vector_Isometry3d shape_poses;
+        std::vector<Eigen::Isometry3d> shape_poses;
         const auto num_shapes = aco.object.primitives.size() + aco.object.meshes.size() + aco.object.planes.size();
         shapes.reserve(num_shapes);
         shape_poses.reserve(num_shapes);

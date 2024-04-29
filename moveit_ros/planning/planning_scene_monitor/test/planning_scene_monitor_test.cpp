@@ -108,6 +108,7 @@ using UpdateType = planning_scene_monitor::PlanningSceneMonitor::SceneUpdateType
 
 TEST_F(PlanningSceneMonitorTest, UpdateTypes)
 {
+  //
   moveit_msgs::msg::PlanningScene msg;
   msg.is_diff = msg.robot_state.is_diff = true;
   TRIGGERS_UPDATE(msg, UpdateType::UPDATE_NONE);
